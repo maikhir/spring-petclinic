@@ -1,10 +1,13 @@
-# CLAUDE.md
+# spring-petclinic: Leitfaden für Agenten
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Zweck
+Referenz-Anwendung: Spring Boot, Thymeleaf, Spring Data JPA.
+Lernprojekt: Ziel sind Code-Review, Abbau technischer Schulden und ein neues Feature.
 
 ## Build & Test
 
-Spring Boot app, Java 17+ (enforced by `maven-enforcer-plugin`). Maven is the primary build (CI runs `./mvnw -B verify`); a Gradle build (`./gradlew build`) is kept in parallel and must keep working too.
+Spring Boot app, Java 25+ (enforced by `maven-enforcer-plugin`). Maven is the primary build (CI runs `./mvnw -B verify`); 
+# a Gradle build (`./gradlew build`) is kept in parallel and must keep working too.
 
 ```bash
 ./mvnw spring-boot:run                      # run on http://localhost:8080 (H2 in-memory)
@@ -13,12 +16,15 @@ Spring Boot app, Java 17+ (enforced by `maven-enforcer-plugin`). Maven is the pr
 ./mvnw test -Dtest='OwnerControllerTests#processCreationFormSuccess'   # single method
 ./mvnw spring-javaformat:apply              # fix formatting (validate phase fails otherwise)
 ./mvnw package -P css                       # recompile petclinic.css from src/main/scss (Maven only)
+/scripts/verify.sh                          # and a short scrit with verify with will be used by agents
+
 ```
 
 The `validate` phase runs `spring-javaformat` (tabs, Spring style) and a `nohttp` checkstyle that rejects plain `http://` URLs. Run `spring-javaformat:apply` before building after editing Java.
 
 Database profiles: default is H2; `-Dspring-boot.run.profiles=mysql` or `postgres` (start DBs via `docker compose up mysql|postgres`). `MySqlIntegrationTests` (Testcontainers) and `PostgresIntegrationTests` (Docker Compose) are skipped when Docker is unavailable.
 
+  
 ## Architecture
 
 Classic layered Spring MVC + Thymeleaf server-side rendering, no service layer: controllers talk directly to Spring Data JPA repositories. Packages are organized by feature under `org.springframework.samples.petclinic`:
@@ -45,5 +51,32 @@ All user-visible text in templates must use message keys (`th:text="#{...}"`). `
 - `PetClinicIntegrationTests` – full `@SpringBootTest`; its `main()` also serves as a dev launcher with Devtools (likewise `MysqlTestApplication`).
 
 ### Deployment
+K
+ein Dockerfile; Images per ./mvnw spring-boot:build-image; Manifeste in k8s/.
 
-No Dockerfile; images are built with `./mvnw spring-boot:build-image`. Kubernetes manifests are in `k8s/` (app + Postgres). `PetClinicRuntimeHints` supports GraalVM native builds (`native-maven-plugin`).
+# No Dockerfile; images are built with `./mvnw spring-boot:build-image`. Kubernetes manifests are in `k8s/` (app + Postgres). `PetClinicRuntimeHints` supports GraalVM native builds (`native-maven-plugin`).
+
+## Konventionen
+- Neue Funktion immer mit Test (JUnit 5, bestehende Teststile übernehmen)
+- Neue Texte in ALLEN messages-Dateien ergänzen
+- Kleine, fokussierte Commits mit Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`)
+- der Branch harness/setup ist die Basis für alle ai/... branches
+- Arbeit nur auf Branches `ai/<thema>`, nie direkt auf `main`
+- Änderungen minimal halten: keine Umformatierung oder Umbenennung unbeteiligter Dateien
+
+## Verboten ohne ausdrückliche Rückfrage
+- Neue Abhängigkeiten oder Versionsänderungen in der `pom.xml`
+- Tests löschen, auskommentieren oder abschwächen, um Fehler zu "beheben"
+- `git push --force`, History umschreiben, direkt auf `main` pushen
+- Secrets, Zugangsdaten oder Dateien außerhalb des Repos anfassen
+
+## Vorgehen bei Aufgaben
+1. Erst lesen und einen kurzen Plan nennen, bei größeren Änderungen warten, bis ich ihn freigebe.
+2. Bei Refactorings zuerst Tests sichern, dann ändern.
+3. Nach jeder Änderung `scripts/verify.sh` ausführen.
+
+## Definition of Done
+- `scripts/verify.sh` ist grün
+- Diff klein und nachvollziehbar
+- Neues Verhalten ist getestet
+- Kurze Zusammenfassung: was geändert, warum, wie geprüft, was offen blieb
