@@ -13,13 +13,11 @@
       "Bash(git switch -c:*)",
       "Bash(ls:*)",
       "Edit(src/**)",
-      "Write(src/**)",
-      "Write(docs/**)"
+      "Edit(docs/**)"
     ],
     "ask": [
       "Bash(git push:*)",
       "Edit(pom.xml)",
-      "Write(pom.xml)",
       "Edit(build.gradle)"
     ],
     "deny": [
