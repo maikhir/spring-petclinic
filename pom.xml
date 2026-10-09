@@ -35,6 +35,8 @@
     <maven-checkstyle.version>3.6.0</maven-checkstyle.version>
     <nohttp-checkstyle.version>0.0.11</nohttp-checkstyle.version>
     <spring-format.version>0.0.47</spring-format.version>
+    <spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
+    <archunit.version>1.5.1</archunit.version>
   </properties>
 
   <dependencies>
@@ -178,6 +180,12 @@
       <artifactId>testcontainers-mysql</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <version>${archunit.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -289,6 +297,25 @@
               <goal>report</goal>
             </goals>
             <phase>prepare-package</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- SpotBugs as report only: the 'spotbugs' goal writes target/spotbugsXml.xml
+      and never fails the build on findings (unlike the 'check' goal) -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs-maven-plugin.version}</version>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotbugs-report</id>
+            <goals>
+              <goal>spotbugs</goal>
+            </goals>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
