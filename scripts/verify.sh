@@ -7,6 +7,16 @@ cd "$(dirname "$0")/.."
 LOG="$(mktemp)"
 trap 'rm -f "$LOG"' EXIT
 
+# Build verlangt Java 25+ (maven-enforcer). Ist die aktive JVM älter, auf macOS eine passende wählen.
+JAVA_MAJOR="$("${JAVA_HOME:+$JAVA_HOME/bin/}java" -XshowSettings:properties -version 2>&1 \
+  | awk '/java.specification.version/{print $3}' | cut -d. -f1 || true)"
+if [ "${JAVA_MAJOR:-0}" -lt 25 ] && [ -x /usr/libexec/java_home ]; then
+  if JDK="$(/usr/libexec/java_home -v 25+ 2>/dev/null)"; then
+    export JAVA_HOME="$JDK"
+    echo "Hinweis: JAVA_HOME auf $JDK gesetzt (Build verlangt Java 25+)"
+  fi
+fi
+
 fail() {
   echo "FEHLER in Schritt: $1"
   echo "--- relevante Zeilen ---"
