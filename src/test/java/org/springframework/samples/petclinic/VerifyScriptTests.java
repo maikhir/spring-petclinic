@@ -15,15 +15,30 @@
  */
 package org.springframework.samples.petclinic;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Guards the single verification entry point used by the agent harness.
+ */
 class VerifyScriptTests {
 
+	private static final Path SCRIPT = Path.of("scripts", "verify.sh");
+
 	@Test
-	void checkVerifyScript() {
-		assertThat(1).isEqualTo(1);
+	void verifyScriptExistsAndIsExecutable() {
+		assertThat(SCRIPT).isRegularFile();
+		assertThat(Files.isExecutable(SCRIPT)).isTrue();
+	}
+
+	@Test
+	void verifyScriptRunsTheFullBuild() throws IOException {
+		assertThat(Files.readString(SCRIPT)).contains("./mvnw -B verify");
 	}
 
 }
