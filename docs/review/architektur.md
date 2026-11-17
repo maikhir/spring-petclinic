@@ -1,6 +1,6 @@
 # Architektur: Datenmodell und Ablauf "Neuen Besitzer anlegen"
 
-Stand: 2026-10-09, Branch `harness/setup`.
+Stand: 2026-10-09, Branch `harness/setup`; am 2026-10-14 gegen `e4555cd` geprüft, keine Abweichungen (Annotationen, Beziehungen, Repository-Methoden, Zeilenangaben).
 Quelle: Lauf des explorer-Agenten (nur lesend) über die Pakete `model`, `owner` und `vet`;
 die zentralen Stellen im `OwnerController` wurden in der Hauptsitzung nachgelesen.
 Nicht geprüft: Thymeleaf-Templates und `db/*/schema.sql` (Spaltenlängen und Fremdschlüssel
